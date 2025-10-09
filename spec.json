@@ -1,0 +1,64 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 900,
+  "height": 560,
+  "title": {"text": "Daily Smoking Prevalence in Australia (NDSHS 2022–23)", "anchor": "start"},
+  "config": {
+    "view": {"stroke": null},
+    "legend": {"titleFontSize": 12, "labelFontSize": 11},
+    "axis": {"labelFontSize": 11, "titleFontSize": 12},
+    "title": {"fontSize": 18}
+  },
+  "projection": {
+  "type": "conicConformal",
+  "parallels": [-18, -36],
+  "rotate": [-134, 0, 0],
+  "center": [0, -30],
+  "scale": 820,
+  "precision": 0.1
+},
+  "layer": [
+    {
+      "data": {"graticule": {"step": [20, 20]}},
+      "mark": {"type": "geoshape", "stroke": "#b9c2cc", "strokeWidth": 0.5}
+    },
+    {
+      "data": {
+        "url": "aus_admin1.topojson",
+        "format": {"type": "topojson", "feature": "ne_10m_admin_1_states_provinces"}
+      },
+      "transform": [
+        {
+          "lookup": "properties.name",
+          "from": {
+            "data": {"url": "smoking_prevalence_australia.csv"},
+            "key": "State/Territory",
+            "fields": ["Daily smoking (%)", "Regular smoking (%)"]
+          }
+        }
+      ],
+      "mark": {"type": "geoshape"},
+      "encoding": {
+        "color": {
+          "field": "Daily smoking (%)",
+          "type": "quantitative",
+          "title": "Daily smokers (%)",
+          "scale": {
+          "scheme": "reds",
+          "domain": [5, 20]   
+      },
+      "legend": {
+          "title": "Daily smokers (%)",
+          "values": [5, 8, 10, 12, 15, 18, 20],
+          "format": ".0f"
+      }
+    },
+      "tooltip": [
+          {"field": "properties.name", "type": "nominal", "title": "State/Territory"},
+          {"field": "Daily smoking (%)", "type": "quantitative", "format": ".1f"},
+          {"field": "Regular smoking (%)", "type": "quantitative", "format": ".1f"}
+        ]
+      }
+    }
+  ]
+}
