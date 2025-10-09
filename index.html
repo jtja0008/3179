@@ -2,37 +2,33 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>FIT3179 Week 9 • Smoking in Australia</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FIT3179 • Smoking in Australia</title>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <style>
-      :root{--pad:24px}
-      body{font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;margin:0;padding:var(--pad);background:#f7fafc;color:#111827}
-      h1{font-size:22px;margin:0 0 6px}
-      p.meta{margin:0 0 18px;color:#4b5563}
-      #vis{border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.06);overflow:hidden;background:white;padding:12px}
-      footer{margin-top:16px;color:#6b7280;font-size:13px}
-      code{background:#eef2f7;padding:2px 6px;border-radius:6px}
+      body { font-family: Calibri, sans-serif; background:#f9fafb; margin:40px; }
+      h1 { font-size:24px; margin-bottom:0; }
+      p { color:#555; }
+      .vis-box { background:#fff; border-radius:10px; padding:15px; margin-bottom:25px; box-shadow:0 4px 10px rgba(0,0,0,0.08);}
     </style>
   </head>
   <body>
     <h1>Daily Smoking Prevalence in Australia (NDSHS 2022–23)</h1>
-    <p class="meta">Choropleth of state/territory smoking rates • Data: NDSHS 2022–23 • Map idiom: choropleth (rates)</p>
-    <div id="vis"></div>
-    <footer>
-      <p>Tip: Make sure your TopoJSON file is named <code>aus_admin1.topojson</code> and that the feature object is <code>ne_10m_admin_1_states_provinces</code>. Place it in the same folder as this page.</p>
-    </footer>
+    <p>Choropleth • Data: NDSHS 2022–23 • Map idiom: choropleth (rates)</p>
+
+    <div class="vis-box">
+      <div id="mapVis"></div>
+    </div>
+
+    <h2>Smoking Prevalence by State/Territory (Interactive)</h2>
+    <div class="vis-box">
+      <div id="week10Vis"></div>
+    </div>
+
     <script>
-      vegaEmbed("#vis", "spec.json", {actions:false}).catch(console.error);
+      vegaEmbed('#mapVis', 'spec.json', {actions:false}).catch(console.error);
+      vegaEmbed('#week10Vis', 'spec_week10.json', {actions:false}).catch(console.error);
     </script>
-   <h2>Smoking Prevalence by State/Territory (Interactive)</h2>
-<div id="vis-week10"></div>
-<script>
-  vegaEmbed('#vis-week10', 'spec_week10.json', { actions: false }).catch(console.error);
-</script>
-
-
   </body>
 </html>
