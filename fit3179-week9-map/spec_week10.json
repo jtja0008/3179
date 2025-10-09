@@ -1,0 +1,73 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 600,
+  "height": 400,
+  "title": {
+    "text": "Smoking Prevalence by State/Territory (NDSHS 2022–23)",
+    "anchor": "start"
+  },
+  "data": {
+    "url": "smoking_prevalence_australia.csv"
+  },
+  "params": [
+    {
+      "name": "smokeMetric",
+      "value": "Daily smoking (%)",
+      "bind": {
+        "input": "select",
+        "options": ["Daily smoking (%)", "Regular smoking (%)"],
+        "labels": ["Daily Smoking (%)", "Regular Smoking (%)"],
+        "name": "Select smoking type: "
+      }
+    }
+  ],
+  "transform": [
+    { "filter": "isValid(datum['State/Territory'])" },
+    { "calculate": "toNumber(datum[smokeMetric])", "as": "value" }
+  ],
+  "layer": [
+    {
+      "mark": { "type": "bar", "cornerRadiusEnd": 3 },
+      "encoding": {
+        "x": {
+          "field": "State/Territory",
+          "type": "nominal",
+          "title": "State/Territory",
+          "sort": "-y"
+        },
+        "y": {
+          "field": "value",
+          "type": "quantitative",
+          "title": "Smoking prevalence (%)"
+        },
+        "color": {
+          "field": "State/Territory",
+          "type": "nominal",
+          "legend": null
+        },
+        "tooltip": [
+          { "field": "State/Territory", "type": "nominal" },
+          { "field": "value", "type": "quantitative", "title": "Value (%)", "format": ".1f" }
+        ]
+      }
+    },
+    {
+      "mark": { "type": "rule", "color": "#c00", "strokeDash": [4, 2] },
+      "encoding": { "y": { "datum": 10 } }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "text": "Reference: 10%",
+        "align": "left",
+        "dx": 5,
+        "dy": -5,
+        "color": "#c00"
+      },
+      "encoding": {
+        "y": { "datum": 10 },
+        "x": { "datum": "Western Australia" }
+      }
+    }
+  ]
+}
