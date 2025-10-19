@@ -1,0 +1,124 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "State Bubble Explorer",
+    "subtitle": "Compare income/education vs daily smoking; bubble size = population or smokers; color = region or smoking category",
+    "anchor": "start"
+  },
+  "width": "container",
+  "height": 520,
+  "data": { "url": "state_metrics.csv" },
+  "params": [
+    {
+      "name": "xMetric",
+      "value": "Average income (AUD)",
+      "bind": {
+        "input": "select",
+        "options": ["Average income (AUD)", "Education level (index)"],
+        "name": "X axis: "
+      }
+    },
+    {
+      "name": "sizeMetric",
+      "value": "Population (total)",
+      "bind": {
+        "input": "select",
+        "options": ["Population (total)", "Smokers (number)"],
+        "name": "Bubble size: "
+      }
+    },
+    {
+      "name": "colorMetric",
+      "value": "Region",
+      "bind": {
+        "input": "select",
+        "options": ["Region", "Smoking category"],
+        "name": "Color by: "
+      }
+    },
+    {
+      "name": "zoom",
+      "select": { "type": "interval" },
+      "bind": "scales"
+    },
+    {
+      "name": "selState",
+      "select": { "type": "point", "fields": ["State/Territory"], "on": "click" },
+      "value": []
+    }
+  ],
+  "transform": [
+    { "filter": "isValid(datum['State/Territory'])" },
+    {
+      "calculate": "xMetric == 'Average income (AUD)' ? toNumber(datum['Average income (AUD)']) : toNumber(datum['Education level (index)'])",
+      "as": "xVal"
+    },
+    { "calculate": "toNumber(datum['Daily smoking (%)'])", "as": "yVal" },
+    {
+      "calculate": "sizeMetric == 'Population (total)' ? toNumber(datum['Population (total)']) : toNumber(datum['Smokers (number)'])",
+      "as": "sizeVal"
+    },
+    {
+      "calculate": "colorMetric == 'Region' ? datum['Region'] : datum['Smoking category']",
+      "as": "colorVal"
+    },
+    {
+      "calculate": "xMetric == 'Average income (AUD)' ? toNumber(datum['Average income (AUD)']) : null",
+      "as": "tipIncome"
+    },
+    {
+      "calculate": "xMetric == 'Education level (index)' ? toNumber(datum['Education level (index)']) : null",
+      "as": "tipEdu"
+    }
+  ],
+  "mark": { "type": "circle", "opacity": 0.9, "stroke": "#ffffff", "strokeWidth": 1 },
+  "encoding": {
+    "x": {
+      "field": "xVal",
+      "type": "quantitative",
+      "title": { "expr": "xMetric" },
+      "axis": { "grid": true }
+    },
+    "y": {
+      "field": "yVal",
+      "type": "quantitative",
+      "title": "Daily smoking prevalence (%)",
+      "axis": { "grid": true }
+    },
+    "size": {
+      "field": "sizeVal",
+      "type": "quantitative",
+      "title": { "expr": "sizeMetric" },
+      "scale": { "range": [80, 1800] }
+    },
+    "color": {
+      "field": "colorVal",
+      "type": "nominal",
+      "title": { "expr": "colorMetric" },
+      "legend": { "orient": "right" }
+    },
+    "tooltip": [
+      { "field": "State/Territory", "title": "State/Territory" },
+      { "field": "Region" },
+      { "field": "Smoking category" },
+      { "field": "tipIncome", "type": "quantitative", "title": "Average income (AUD)", "format": ",.0f" },
+      { "field": "tipEdu", "type": "quantitative", "title": "Education level (index)", "format": ".2f" },
+      { "field": "Daily smoking (%)", "type": "quantitative", "format": ".1f" },
+      { "field": "Population (total)", "type": "quantitative", "format": ",.0f" },
+      { "field": "Smokers (number)", "type": "quantitative", "format": ",.0f" }
+    ],
+    "opacity": {
+      "condition": { "param": "selState", "empty": false, "value": 1 },
+      "value": 0.25
+    }
+  },
+  "config": {
+    "view": { "stroke": null },
+    "axis": { "labelFontSize": 11, "titleFontSize": 12 },
+    "legend": { "titleFontSize": 12, "labelFontSize": 11 },
+    "tooltip": {
+      "content": "data",
+      "format": { "labelColor": "#666666", "valueColor": "#000000" }
+    }
+  }
+}

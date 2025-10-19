@@ -1,0 +1,9 @@
+State/Territory,Region,Smoking category,Average income (AUD),Education level (index),Daily smoking (%),Population (total),Smokers (number)
+New South Wales,East,Moderate,85000,0.72,10.4,8200000,852800
+Victoria,South East,Low,84000,0.75,9.8,6700000,656600
+Queensland,North East,Moderate,80000,0.68,11.9,5200000,618800
+South Australia,South,Moderate,78000,0.70,10.2,1800000,183600
+Western Australia,West,Low,87000,0.74,9.1,2700000,245700
+Tasmania,South,High,74000,0.65,12.3,540000,66420
+Australian Capital Territory,East,Low,95000,0.80,7.1,460000,32660
+Northern Territory,North,High,72000,0.60,17.0,250000,42500

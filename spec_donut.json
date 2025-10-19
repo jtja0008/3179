@@ -1,0 +1,31 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Donut showing smoking-attributable disease shares in Australia.",
+  "data": { "url": "smoking_diseases_aus.csv" },
+  "transform": [
+    { "calculate": "toNumber(datum.value)", "as": "val" },
+    { "window": [{ "op": "sum", "field": "val", "as": "total" }] },
+    { "calculate": "datum.val / datum.total", "as": "pct" }
+  ],
+  "view": { "stroke": null },
+  "mark": { "type": "arc", "innerRadius": 90, "outerRadius": 200 },
+  "encoding": {
+    "theta": { "field": "val", "type": "quantitative", "stack": true },
+    "color": {
+      "field": "disease",
+      "type": "nominal",
+      "title": "Disease",
+      "legend": { "orient": "right" }
+    },
+    "tooltip": [
+      { "field": "disease", "type": "nominal", "title": "Disease" },
+      { "field": "val", "type": "quantitative", "title": "Value", "format": ",.1f" },
+      { "field": "pct", "type": "quantitative", "title": "Share", "format": ".1%" }
+    ]
+  },
+  "config": {
+    "legend": { "titleFontSize": 12, "labelFontSize": 11 },
+    "title": { "fontSize": 16 },
+    "arc": { "stroke": null }
+  }
+}

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smoking Prevalence in Australia — NDSHS 2022–23</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Vega libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+  <style>
+    :root{
+      --bg1:#f6f3ee; --bg2:#ede7df;
+      --ink:#1f1f1f; --muted:#596375;
+
+      --card:#ffffff; --border:#e6dfd7;
+      --radius:16px; --shadow:0 10px 28px rgba(0,0,0,.07);
+
+      --gap:28px;
+      --wrap-max:1800px;
+      --grid-max:1650px;
+
+      
+      --top-card-h:360px;      
+      --map-card-h:660px;      
+      --bottom-card-h:520px;   
+
+      --explain-ink:#2f5ea8;
+      --explain-bg:#eef5ff;
+      --explain-brd:#dbe7ff;
+
+      --hint-ink:#5b4dcc;
+      --hint-bg:#f1edff;
+      --hint-brd:#dcd3ff;
+    }
+
+    *{box-sizing:border-box;}
+    body{
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      color:var(--ink);
+      background:radial-gradient(40% 40% at 50% 0%, #fbfaf8 0%, #efe9e1 100%);
+      margin:0;
+    }
+
+    .wrap{
+      max-width:var(--wrap-max);
+      margin-inline:auto;
+      padding:44px 24px 48px;
+    }
+
+    /* Title and subtitle */
+    header{text-align:center;margin-bottom:28px;}
+    .title{
+      margin:0;
+      font-size:clamp(28px,4.2vw,44px);
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .accent{ color:#6c63ff; } 
+    p.lead{
+      margin:8px 0 0 0;
+      color:var(--muted);
+      font-size:clamp(14px,1.6vw,16px);
+    }
+
+    /* ======= Cards ======= */
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .card h3{margin:8px 0 12px 0;font-size:18px;}
+    .pill{
+      display:inline-block;padding:6px 12px;border-radius:999px;
+      background:rgba(108,99,255,.10);color:#4939c5;
+      border:1px solid rgba(108,99,255,.25);
+      font-weight:600;font-size:12px;margin-bottom:10px;
+    }
+
+    .vis{width:100%;}
+    .vis-top{height:var(--top-card-h);}
+    .vis-map{height:var(--map-card-h);}
+    .vis-bottom{height:var(--bottom-card-h);}
+    .vega-embed svg,.vega-embed canvas{border-radius:12px;}
+
+    .explain{
+      margin-top:12px;
+      color:var(--explain-ink);
+      background:var(--explain-bg);
+      border:1px solid var(--explain-brd);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:13px;
+      line-height:1.55;
+    }
+    .hint{
+      margin-top:8px;
+      color:var(--hint-ink);
+      background:var(--hint-bg);
+      border:1px solid var(--hint-brd);
+      border-radius:10px;
+      padding:8px 10px;
+      font-size:12.5px;
+      font-weight:600;
+      line-height:1.5;
+    }
+
+    
+    .grid-3{
+      display:grid;
+      grid-template-columns: 1fr 1.45fr 1fr; 
+      gap: var(--gap);
+      width:100%;
+      max-width:var(--grid-max);
+      margin-inline:auto;
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;  
+      gap: var(--gap);
+      width:100%;
+      max-width:var(--grid-max);
+      margin:var(--gap) auto 0 auto;
+    }
+
+    @media (max-width:1200px){
+      .grid-3{ grid-template-columns: 1fr; }
+      .grid-2{ grid-template-columns: 1fr; }
+      :root{ --map-card-h:600px; }
+    }
+
+    /* Author/Data frame */
+    .author-wrap{
+      max-width:900px;margin:28px auto 0 auto;
+    }
+    .author{
+      background:#f5f9ff;border:1px solid #dbe7ff;border-radius:16px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.05);
+      padding:22px 26px;color:#2f5ea8;font-size:14px;line-height:1.7;
+      text-align:center;
+    }
+    .author a{color:#415cbc;text-decoration:underline;}
+    .author ul{list-style:disc;margin:8px auto 0 auto;padding-left:20px;max-width:720px;text-align:left;}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <h1 class="title">Smoking Prevalence <span class="accent">in Australia</span></h1>
+      <p class="lead">
+        This dashboard visualises smoking prevalence across Australia using national survey data. It examines regional differences, temporal changes, and socioeconomic factors shaping smoking behaviour. The goal is to support deeper understanding of tobacco use patterns nationwide.
+      </p>
+    </header>
+
+    <!-- ======= TOP ROW: Bar (L) — Map (C) — Line (R) ======= -->
+    <section class="grid-3">
+      <!-- Left: Bar -->
+      <article class="card">
+        <span class="pill">State Comparison</span>
+        <h3>Smoking Prevalence by State/Territory</h3>
+        <div id="barchart" class="vis vis-top"></div>
+        <p class="explain">
+          Bar chart shows the latest prevalence by selected demographic or region. Hover to view exact values, and use the dropdown menu to change the split.
+        </p>
+        <p class="hint">💡 Tip: Use the menu above the chart to switch categories quickly.</p>
+      </article>
+
+      <!-- Center: Map (taller + wider center column) -->
+      <article class="card">
+        <span class="pill">Geographic View</span>
+        <h3>Daily Smoking Prevalence Across Australia</h3>
+        <div id="map" class="vis vis-map"></div>
+        <p class="explain">
+          The map highlights how daily smoking prevalence varies geographically across Australia. Darker shades indicate higher rates.
+        </p>
+        <p class="hint">💡 Tip: Hover over each state to display its smoking prevalence value.</p>
+      </article>
+
+      <!-- Right: Line -->
+      <article class="card">
+        <span class="pill">National Trend</span>
+        <h3>Australia — Daily Smoking Prevalence (2018–2025)</h3>
+        <div id="lineVis" class="vis vis-top"></div>
+        <p class="explain">
+          The trend lines show national daily smoking prevalence from 2018–2025. Optional markers annotate major policy or contextual events.
+        </p>
+        <p class="hint">💡 Tip: Hover over points on the line to reveal specific yearly values or event details.</p>
+      </article>
+    </section>
+
+    <!-- ======= BOTTOM ROW: Bubble (L) — Donut (R) ======= -->
+    <section class="grid-2">
+      <!-- Bubble -->
+      <article class="card">
+        <span class="pill">Multivariate Explorer</span>
+        <h3>Income / Education vs Daily Smoking</h3>
+        <div id="bubbleVis" class="vis vis-bottom"></div>
+        <p class="explain">
+          The bubble chart explores how smoking prevalence relates to socioeconomic factors. Each bubble represents a state/region (size reflects population or smokers, colour shows region). Hover for details; click to isolate a state; drag to pan/zoom.
+        </p>
+        <p class="hint">💡 Tip: Hover a bubble to see detailed data. Drag to move around or zoom to focus on smaller regions.</p>
+      </article>
+
+      <!-- Donut (white frame like others) -->
+      <article class="card">
+        <span class="pill">Health Impact</span>
+        <h3>Smoking-Attributable Diseases (Australia)</h3>
+        <div id="donutVis" class="vis vis-bottom"></div>
+        <p class="explain">
+          This donut summarises the burden of disease attributable to smoking in Australia. Segments show the share contributed by each disease group. Hover slices for exact values and shares; use the legend to focus categories.
+        </p>
+        <p class="hint">💡 Tip: Hover a slice to see its value and percentage. Click a legend item to emphasise a specific disease group.</p>
+      </article>
+    </section>
+
+    <!-- ======= Author/Data frame ======= -->
+    <div class="author-wrap">
+      <section class="author">
+        <p><strong>Author:</strong> Jansen Tjai</p>
+        <p><strong>Student ID:</strong> 35101245</p>
+        <p><strong>Date of Published:</strong> 20/10/2025</p>
+
+        <p><strong>Data Sources:</strong></p>
+        <ul>
+          <li>
+            Smoking Data (ABS) — 
+            <a href="https://www.aihw.gov.au/reports/illicit-use-of-drugs/national-drug-strategy-household-survey" target="_blank" rel="noopener">
+              NDSHS 2022–2023
+            </a>
+          </li>
+          <li>
+            Geospatial Boundaries  — 
+            <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">
+              Natural Earth Data — Free vector and raster map data
+            </a>
+          </li>
+          <li>
+            Population / Demographic Data — 
+            <a href="https://www.abs.gov.au/statistics" target="_blank" rel="noopener">
+              ABS — Australian Bureau of Statistics
+            </a>
+          </li>
+          <li>
+            Smoking-attributable diseases 
+            Australian Institute of Health and Welfare (AIHW) — 
+            <a href="https://www.aihw.gov.au/reports/burden-of-disease/burden-of-tobacco-use-in-australia" target="_blank" rel="noopener">
+              Burden of Tobacco Use / ABDS
+            </a>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    
+    const fitWidthWithHeight = (spec, h) => ({
+      ...spec,
+      width:"container", height:h,
+      autosize:{type:"fit",contains:"padding"},
+      padding:spec.padding??{left:6,right:18,top:6,bottom:6}
+    });
+    const embedOpts={actions:false,renderer:"svg"};
+
+    Promise.all([
+      fetch("spec_week10.json").then(r=>r.json()),     // bar
+      fetch("spec.json").then(r=>r.json()),            // map
+      fetch("spec_line_events.json").then(r=>r.json()),// line
+      fetch("spec_bubble.json").then(r=>r.json()),     // bubble
+      fetch("spec_donut.json").then(r=>r.json())       // donut
+    ]).then(([bar,map,line,bubble,donut])=>{
+      vegaEmbed("#barchart", fitWidthWithHeight(bar, getH("--top-card-h")), embedOpts);
+      vegaEmbed("#map",      fitWidthWithHeight(map, getH("--map-card-h")), embedOpts);
+      vegaEmbed("#lineVis",  fitWidthWithHeight(line, getH("--top-card-h")), embedOpts);
+      vegaEmbed("#bubbleVis",fitWidthWithHeight(bubble, getH("--bottom-card-h")), embedOpts);
+      vegaEmbed("#donutVis", fitWidthWithHeight(donut,  getH("--bottom-card-h")), embedOpts);
+    });
+
+    function getH(varName){
+      const v = getComputedStyle(document.documentElement).getPropertyValue(varName);
+      const n = parseInt(v,10);
+      return Number.isFinite(n) ? n : 400;
+    }
+  </script>
+</body>
+</html>

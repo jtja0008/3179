@@ -1,0 +1,105 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 760,
+  "height": 320,
+  "title": {
+    "text": "Daily Smoking Prevalence with Timeline Events",
+    "subtitle": "Line shows overall Australian rate; optional markers annotate key events",
+    "anchor": "start"
+  },
+  "config": {
+    "view": { "stroke": null },
+    "axis": { "labelFontSize": 11, "titleFontSize": 12 },
+    "title": { "fontSize": 16 }
+  },
+
+  "params": [
+    {
+      "name": "showEvents",
+      "value": true,
+      "bind": { "input": "checkbox", "name": " Show events" }
+    }
+  ],
+
+  "layer": [
+    {
+      "data": { "url": "australia_daily_smoking_2018_2025.csv" },
+      "mark": { "type": "line", "point": { "filled": true, "size": 50 } },
+      "encoding": {
+        "x": {
+          "field": "Year",
+          "type": "quantitative",
+          "title": "Year",
+          "scale": { "domain": [2018, 2025] },
+          "axis": { "tickMinStep": 1 }
+        },
+        "y": {
+          "field": "Daily smoking (%)",
+          "type": "quantitative",
+          "title": "Daily smoking prevalence (%)"
+        },
+        "color": {
+          "datum": "Australia rate",
+          "scale": {
+            "domain": ["Australia rate", "Event"],
+            "range": ["#c62e2e", "#2f4858"]
+          },
+          "legend": { "title": "Legend" }
+        },
+        "tooltip": [
+          { "field": "Year", "type": "quantitative" },
+          { "field": "Daily smoking (%)", "type": "quantitative", "format": ".1f" }
+        ]
+      }
+    },
+
+    {
+      "data": { "url": "events_smoking_policy.csv" },
+      "transform": [
+        { "filter": { "param": "showEvents" } }
+      ],
+      "mark": { "type": "rule", "strokeDash": [4, 2], "opacity": 0.8 },
+      "encoding": {
+        "x": { "field": "Year", "type": "quantitative" },
+        "color": {
+          "datum": "Event",
+          "scale": {
+            "domain": ["Australia rate", "Event"],
+            "range": ["#c62e2e", "#2f4858"]
+          },
+          "legend": null
+        },
+        "tooltip": [
+          { "field": "Title", "type": "nominal" },
+          { "field": "Description", "type": "nominal" },
+          { "field": "Year", "type": "quantitative" }
+        ]
+      }
+    },
+
+    {
+      "data": { "url": "events_smoking_policy.csv" },
+      "transform": [
+        { "filter": { "param": "showEvents" } }
+      ],
+      "mark": { "type": "point", "shape": "triangle-up", "size": 90, "filled": true },
+      "encoding": {
+        "x": { "field": "Year", "type": "quantitative" },
+        "y": { "aggregate": "min", "value": 0, "type": "quantitative" },
+        "color": {
+          "datum": "Event",
+          "scale": {
+            "domain": ["Australia rate", "Event"],
+            "range": ["#c62e2e", "#2f4858"]
+          },
+          "legend": null
+        },
+        "tooltip": [
+          { "field": "Title", "type": "nominal" },
+          { "field": "Description", "type": "nominal" },
+          { "field": "Year", "type": "quantitative" }
+        ]
+      }
+    }
+  ]
+}
